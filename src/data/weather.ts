@@ -10,7 +10,6 @@ export interface WeatherData {
   city: string;
 }
 
-// Mock data — ready to swap with OpenWeatherMap API
 export const getMockWeather = (): WeatherData => {
   const hour = new Date().getHours();
   
@@ -18,19 +17,18 @@ export const getMockWeather = (): WeatherData => {
     return {
       temperature: 14,
       condition: 'night',
-      conditionLabel: 'Notte Serena',
+      conditionLabel: 'Noite Limpa',
       windSpeed: 8,
       windDirection: 'NE',
       humidity: 65,
-      city: 'Roma',
+      city: 'Lisboa',
     };
   }
   
-  // Daytime — rotate conditions for demo
   const conditions: Array<{ condition: WeatherCondition; label: string; temp: number }> = [
-    { condition: 'sun', label: 'Soleggiato', temp: 26 },
-    { condition: 'rain', label: 'Pioggia Leggera', temp: 17 },
-    { condition: 'clouds', label: 'Nuvoloso', temp: 21 },
+    { condition: 'sun', label: 'Céu Limpo', temp: 26 },
+    { condition: 'rain', label: 'Chuva Ligeira', temp: 17 },
+    { condition: 'clouds', label: 'Nublado', temp: 21 },
   ];
 
   const pick = conditions[Math.floor(Date.now() / 60000) % conditions.length];
@@ -42,19 +40,58 @@ export const getMockWeather = (): WeatherData => {
     windSpeed: 12,
     windDirection: 'SO',
     humidity: 58,
-    city: 'Roma',
+    city: 'Lisboa',
   };
 };
 
 export const getMissionBriefing = (condition: WeatherCondition): string => {
   switch (condition) {
     case 'sun':
-      return 'Visibilità perfetta per la sorveglianza. Incontro fissato in Piazza. Indossare gli occhiali da sole.';
+      return 'Visibilidade perfeita para vigilância. Encontro marcado na Praça. Usar óculos escuros.';
     case 'rain':
-      return "Operazione sotto copertura. L'asfalto è scivoloso, attenzione all'inseguimento. Il soprabito è obbligatorio.";
+      return 'Operação sob cobertura. O asfalto está escorregadio, cuidado na perseguição. O sobretudo é obrigatório.';
     case 'night':
-      return 'Modalità silenziosa attivata. Le luci della città sono la vostra copertura.';
+      return 'Modo silencioso ativado. As luzes da cidade são a sua cobertura.';
     case 'clouds':
-      return 'Cielo coperto — condizioni ideali per il passaggio di documenti. Mantenere il profilo basso.';
+      return 'Céu coberto — condições ideais para passagem de documentos. Manter perfil baixo.';
   }
 };
+
+export interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  priority: 1 | 2 | 3;
+  completed: boolean;
+}
+
+export const getDefaultMissions = (): Mission[] => [
+  {
+    id: '1',
+    title: 'Migração de Ativos (Copilot)',
+    description: 'Transferir documentos classificados para o novo sistema de comunicação seguro.',
+    priority: 3,
+    completed: false,
+  },
+  {
+    id: '2',
+    title: 'Reconhecimento do Perímetro',
+    description: 'Mapear todas as entradas e saídas do edifício alvo no sector Norte.',
+    priority: 2,
+    completed: false,
+  },
+  {
+    id: '3',
+    title: 'Manutenção do Equipamento',
+    description: 'Verificar calibração dos instrumentos de escuta no posto avançado.',
+    priority: 1,
+    completed: false,
+  },
+];
+
+export const TIMEZONE_CITIES = [
+  { label: 'Lisboa', timezone: 'Europe/Lisbon' },
+  { label: 'Londres', timezone: 'Europe/London' },
+  { label: 'Nova Iorque', timezone: 'America/New_York' },
+  { label: 'Roma', timezone: 'Europe/Rome' },
+];
