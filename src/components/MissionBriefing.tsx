@@ -14,49 +14,52 @@ const MissionBriefing = ({ briefing }: MissionBriefingProps) => {
     setTimeout(() => {
       setConfirmed(true);
       setAnimating(false);
-    }, 1500);
+    }, 600);
   };
 
   return (
-    <div className="dossier-card p-4 sm:p-6">
-      <div className="flex items-center justify-between mb-4">
-        <span className="dossier-stamp">Riservato</span>
-        <span className="text-[10px] font-mono-data text-muted-foreground uppercase tracking-widest">
-          Istruzioni Operative
-        </span>
+    <div className="crt-screen crt-scanline-sweep p-4 sm:p-5">
+      <div className="flex items-center justify-between mb-3">
+        <span className="crt-label">Briefing de Campo</span>
+        <div className="flex items-center gap-2">
+          <div className={`led ${confirmed ? 'led-green' : 'led-amber'}`} />
+          <span className="text-[9px] font-mono-data text-muted-foreground">
+            {confirmed ? 'CONFIRMADO' : 'PENDENTE'}
+          </span>
+        </div>
       </div>
 
-      <div className="min-h-[80px] flex items-center">
+      {/* Agent header */}
+      <div className="mb-3 pb-2 border-b border-border">
+        <p className="font-mono-data text-[10px] uppercase tracking-[0.15em] amber-text">
+          Agente: G. Oliveira — Status: Activo
+        </p>
+      </div>
+
+      <div className="min-h-[60px] flex items-center">
         <p
-          className={`font-typewriter text-sm sm:text-base leading-relaxed text-foreground transition-opacity duration-1000 ${
-            animating ? 'typewriter-confirm' : ''
-          } ${confirmed ? 'opacity-50' : ''}`}
+          className={`font-mono-data text-sm sm:text-base leading-relaxed phosphor-text transition-opacity duration-500 ${
+            animating ? 'mission-complete' : ''
+          } ${confirmed ? 'opacity-30' : ''}`}
         >
           « {briefing} »
         </p>
       </div>
 
-      <hr className="dossier-divider" />
+      <hr className="panel-divider" />
 
       <div className="flex items-center justify-between">
         <button
           onClick={handleConfirm}
           disabled={confirmed}
-          className={`
-            font-mono-data text-xs uppercase tracking-[0.2em] px-4 py-2 border transition-all duration-300
-            ${
-              confirmed
-                ? 'border-muted-foreground text-muted-foreground cursor-default opacity-50'
-                : 'border-ink text-ink hover:bg-primary hover:text-primary-foreground cursor-pointer'
-            }
-          `}
+          className="btn-bakelite"
         >
-          {confirmed ? '✓ Lettura Confermata' : 'Conferma Lettura'}
+          {confirmed ? '✓ Leitura Confirmada' : 'Confirmar Leitura'}
         </button>
 
         {confirmed && (
-          <span className="text-[10px] font-mono-data text-muted-foreground italic">
-            {new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} — ricevuto
+          <span className="text-[10px] font-mono-data text-muted-foreground">
+            {new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })} — recebido
           </span>
         )}
       </div>
