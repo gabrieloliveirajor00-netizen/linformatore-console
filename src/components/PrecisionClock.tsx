@@ -1,87 +1,100 @@
 import { useState, useEffect } from 'react';
-import { TIMEZONE_CITIES } from '@/data/weather';
 
 const PrecisionClock = () => {
-  const [now, setNow] = useState(new Date());
-  const [cityIndex, setCityIndex] = useState(0);
+  const [time, setTime] = useState(new Date());
+  const [currentCityIndex, setCurrentCityIndex] = useState(0);
+
+  const cities = [
+    { name: 'LISBOA', tz: 'Europe/Lisbon' },
+    { name: 'NYC', tz: 'America/New_York' },
+    { name: 'BRASÍLIA', tz: 'America/Sao_Paulo' },
+    { name: 'ROMA', tz: 'Europe/Rome' },
+    { name: 'TÓQUIO', tz: 'Asia/Tokyo' },
+    { name: 'ZURIQUE', tz: 'Europe/Zurich' },
+  ];
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
+    const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (date: Date, tz?: string) => {
-    return date.toLocaleTimeString('pt-PT', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-      ...(tz ? { timeZone: tz } : {}),
-    });
+  const formatUnit = (unit: number) => unit.toString().padStart(2, '0');
+
+  const getCityTime = (tz: string) => {
+    return new Date().toLocaleTimeString('pt-PT', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
   };
 
-  const cycleCity = () => {
-    setCityIndex((i) => (i + 1) % TIMEZONE_CITIES.length);
+  const handleTune = () => {
+    setCurrentCityIndex((prev) => (prev + 1) % cities.length);
   };
-
-  const selectedCity = TIMEZONE_CITIES[cityIndex];
-  const localTime = formatTime(now);
-  const remoteTime = formatTime(now, selectedCity.timezone);
 
   return (
-    <div className="crt-screen crt-scanline-sweep p-4 sm:p-5">
-      <div className="flex items-center justify-between mb-3">
-        <span className="crt-label">Relógio</span>
-        <div className="flex items-center gap-2">
-          <div className="led led-green" />
-          <span className="font-mono-data text-[9px] text-muted-foreground">SYNC</span>
+    <div className="luxury-panel w-full h-full flex flex-col items-center justify-center p-4">
+      {/* Primary Local Time (Lisbon) */}
+      <div className="flex gap-3 items-baseline mb-3">
+
+        {/* Hours */}
+        <div className="flex flex-col items-center">
+          <span className="font-mono text-5xl text-ivory font-light tracking-tighter">
+            {formatUnit(time.getHours())}
+          </span>
+          <span className="text-label text-[8px] mt-0.5">ORE</span>
         </div>
+
+        <span className="font-mono text-5xl text-gold/50 animate-pulse pb-2">:</span>
+
+        {/* Minutes */}
+        <div className="flex flex-col items-center">
+          <span className="font-mono text-5xl text-ivory font-light tracking-tighter">
+            {formatUnit(time.getMinutes())}
+          </span>
+          <span className="text-label text-[8px] mt-0.5">MIN</span>
+        </div>
+
+        <span className="font-mono text-5xl text-gold/50 animate-pulse pb-2">:</span>
+
+        {/* Seconds */}
+        <div className="flex flex-col items-center">
+          <span className="font-mono text-5xl text-gold font-light tracking-tighter">
+            {formatUnit(time.getSeconds())}
+          </span>
+          <span className="text-label text-[8px] mt-0.5 text-gold/70">SEC</span>
+        </div>
+
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-1 font-mono-data">
-            Hora Local
-          </p>
-          <p className="font-mono-data text-lg sm:text-2xl phosphor-text tracking-wider">
-            {localTime}
-          </p>
-        </div>
-        <div className="text-right">
-          <div className="flex items-center justify-end gap-2 mb-1">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-mono-data">
-              {selectedCity.label}
-            </p>
-            <button
-              onClick={cycleCity}
-              className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-display"
-              style={{
-                background: 'radial-gradient(ellipse at 40% 30%, hsl(220 6% 30%), hsl(220 8% 18%))',
-                border: '1px solid hsl(220 6% 12%)',
-                color: 'hsl(var(--phosphor))',
-                boxShadow: '0 1px 3px hsl(0 0% 0% / 0.4), inset 0 1px 0 hsl(0 0% 100% / 0.06)',
-              }}
-              title="Ajuste de Frequência"
-            >
-              ◄►
-            </button>
+      <div className="w-3/4 h-[1px] bg-zinc-800 mb-4" />
+
+      {/* Secondary World Clock Line */}
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          {/* Static Main City */}
+          <div className="flex flex-col items-end">
+            <span className="font-sans text-[10px] tracking-[0.2em] text-zinc-500 uppercase">LOCAL</span>
+            <span className="font-mono text-sm text-ivory">LISBOA</span>
           </div>
-          <p className="font-mono-data text-lg sm:text-2xl amber-text tracking-wider">
-            {remoteTime}
-          </p>
+
+          <div className="h-8 w-[1px] bg-zinc-800" />
+
+          {/* Tuned City */}
+          <div className="flex flex-col items-start min-w-[80px]">
+            <span className="font-sans text-[10px] tracking-[0.2em] text-gold uppercase">MONITOR</span>
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-sm text-ivory">{cities[currentCityIndex].name}</span>
+              <span className="font-mono text-xs text-zinc-500">{getCityTime(cities[currentCityIndex].tz)}</span>
+            </div>
+          </div>
         </div>
+
+        {/* Tune Button */}
+        <button
+          onClick={handleTune}
+          className="luxury-switch px-3 h-6 w-auto text-[9px] uppercase tracking-widest font-sans text-obsidian bg-gold hover:bg-white transition-colors"
+        >
+          TUNE
+        </button>
       </div>
 
-      <hr className="panel-divider" />
-
-      <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-mono-data">
-        {now.toLocaleDateString('pt-PT', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
-      </p>
     </div>
   );
 };

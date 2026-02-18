@@ -1,71 +1,79 @@
 import { useState, useEffect } from 'react';
 import PrecisionClock from '@/components/PrecisionClock';
 import WeatherDossier from '@/components/WeatherDossier';
-import MissionBriefing from '@/components/MissionBriefing';
 import ObjetivosDeCampo from '@/components/ObjetivosDeCampo';
-import { getMockWeather, getMissionBriefing } from '@/data/weather';
+import PomodoroTimer from '@/components/PomodoroTimer';
+import { getMockWeather, getMissionBriefing, fetchWeather, WeatherData } from '@/data/weather';
 
 const Index = () => {
-  const [weather] = useState(getMockWeather());
+  const [weather, setWeather] = useState<WeatherData>(getMockWeather());
   const [briefing, setBriefing] = useState('');
 
   useEffect(() => {
-    setBriefing(getMissionBriefing(weather.condition));
-  }, [weather.condition]);
+    const initWeather = async () => {
+      const data = await fetchWeather();
+      setWeather(data);
+      setBriefing(getMissionBriefing(data.condition));
+    };
+
+    initWeather();
+
+    // Refresh every 30 minutes
+    const interval = setInterval(initWeather, 30 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen chassis-texture flex items-center justify-center p-4 sm:p-8">
-      <div className="w-full max-w-md sm:max-w-lg">
-        {/* Header — Console Plate */}
-        <header className="text-center mb-6 sm:mb-8">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="chassis-screw" />
-            <div className="inline-block border-2 border-border px-4 sm:px-6 py-2"
-              style={{
-                background: 'linear-gradient(180deg, hsl(220 8% 18%), hsl(220 10% 12%))',
-                boxShadow: 'inset 0 1px 0 hsl(0 0% 100% / 0.04), 0 2px 4px hsl(0 0% 0% / 0.4)',
-              }}
-            >
-              <h1 className="font-display text-xl sm:text-2xl font-bold phosphor-text tracking-wider">
-                L'Informatore
-              </h1>
-            </div>
-            <div className="chassis-screw" />
-          </div>
-          <p className="font-mono-data text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-            Serviço de Informações — Relatório Diário
-          </p>
-          <div className="flex justify-center gap-4 mt-2">
-            <span className="w-8 h-[1px] bg-border inline-block mt-2" />
-            <div className="flex items-center gap-2">
-              <div className="led led-green" />
-              <span className="text-[10px] font-mono-data amber-text uppercase tracking-widest">
-                Classificado
-              </span>
-              <div className="led led-green" />
-            </div>
-            <span className="w-8 h-[1px] bg-border inline-block mt-2" />
+    <div className="min-h-screen flex flex-col items-center py-20 px-4 sm:px-8 transition-colors duration-500">
+
+      {/* Main Container */}
+      <div className="w-full max-w-5xl relative">
+
+        {/* Header */}
+        <header className="text-center mb-16 relative animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="inline-block relative">
+            <h1 className="font-sans text-4xl sm:text-5xl font-light text-ivory tracking-[0.2em] mb-4 uppercase">
+              L'Informatore
+            </h1>
+            <div className="w-24 h-[1px] bg-gold mx-auto" />
+            <p className="font-sans text-xs text-gold uppercase tracking-[0.4em] mt-4">
+              Dossier Confidencial
+            </p>
           </div>
         </header>
 
         {/* Console Modules */}
-        <div className="space-y-4 sm:space-y-5">
-          <PrecisionClock />
-          <WeatherDossier data={weather} />
-          <MissionBriefing briefing={briefing} />
-          <ObjetivosDeCampo />
+        <div className="w-full max-w-5xl relative z-10 space-y-4">
+
+          {/* TOP ROW: Weather & Clock (Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[240px]">
+            <WeatherDossier data={weather} briefing={briefing} />
+            <PrecisionClock />
+          </div>
+
+          {/* MIDDLE ROW: Pomodoro (Full Width) */}
+          <PomodoroTimer />
+
+          {/* BOTTOM ROW: Switchboard (Full Width) */}
+          <div className="w-full">
+            <ObjetivosDeCampo />
+          </div>
+
         </div>
 
-        {/* Footer — Console Serial */}
-        <footer className="mt-6 sm:mt-8 text-center">
-          <hr className="panel-divider" />
-          <p className="font-mono-data text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-            Ref. Prot. N° {Math.floor(Date.now() / 86400000)} — Distribuição Limitada
-          </p>
-          <p className="font-mono-data text-[9px] text-muted-foreground mt-1">
-            Destruir após leitura
+        {/* Footer */}
+        <footer className="mt-24 text-center animate-in fade-in duration-1000 delay-300">
+          <div className="flex justify-center mb-6">
+            <div className="w-6 h-6 rounded-full border border-zinc-800 flex items-center justify-center">
+              <span className="font-sans text-[10px] text-zinc-600">LI</span>
+            </div>
+          </div>
+
+          <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-zinc-700">
+            Secure Terminal // {new Date().getFullYear()}
           </p>
         </footer>
+
       </div>
     </div>
   );

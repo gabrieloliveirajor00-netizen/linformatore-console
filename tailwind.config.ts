@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -14,6 +15,12 @@ export default {
     },
     extend: {
       colors: {
+        // Minimalist Luxury Palette
+        obsidian: "#050505", // Absolute Matte Black
+        gold: "#C5A059",     // Aged Gold (Muted/Metallic)
+        ivory: "#F0F0F0",    // Off-white / Muted Silver
+        metal: "#1A1A1A",    // Dark Graphite Separators
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -47,31 +54,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        phosphor: "hsl(var(--phosphor))",
-        "phosphor-dim": "hsl(var(--phosphor-dim))",
-        amber: "hsl(var(--amber))",
-        "amber-dim": "hsl(var(--amber-dim))",
-        "led-red": "hsl(var(--led-red))",
-        "led-green": "hsl(var(--led-green))",
-        "led-amber": "hsl(var(--led-amber))",
-        chassis: "hsl(var(--chassis))",
-        "chassis-light": "hsl(var(--chassis-light))",
-        "chassis-dark": "hsl(var(--chassis-dark))",
-        bezel: "hsl(var(--bezel))",
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
       },
       fontFamily: {
-        display: ["'Orbitron'", "sans-serif"],
-        mono: ["'Share Tech Mono'", "'Courier New'", "monospace"],
+        sans: ["'Inter'", "sans-serif"],     // Primary UI font
+        mono: ["'JetBrains Mono'", "monospace"], // Data/Tech font
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -94,5 +80,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindAnimate],
 } satisfies Config;
