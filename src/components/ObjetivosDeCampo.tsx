@@ -29,7 +29,11 @@ const ObjetivosDeCampo = () => {
   // Load initial state (Total Persistence)
   useEffect(() => {
     const savedFolders = localStorage.getItem('PASTAS_OPERATIVAS');
-    if (savedFolders) setFolders(JSON.parse(savedFolders));
+    if (savedFolders) {
+      const parsedFolders = JSON.parse(savedFolders);
+      setFolders(parsedFolders);
+      console.log('Switchboard Folders loaded:', parsedFolders);
+    }
 
     const savedMissions = localStorage.getItem('MISSOES_ATIVAS');
     if (savedMissions) {
