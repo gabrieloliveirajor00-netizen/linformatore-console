@@ -69,6 +69,7 @@ export interface Mission {
   description: string;
   priority: 1 | 2 | 3;
   completed: boolean;
+  folderId?: string;
 }
 
 export const getDefaultMissions = (): Mission[] => [
