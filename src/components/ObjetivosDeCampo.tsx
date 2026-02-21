@@ -30,9 +30,7 @@ const ObjetivosDeCampo = () => {
   useEffect(() => {
     const savedFolders = localStorage.getItem('PASTAS_OPERATIVAS');
     if (savedFolders) {
-      const parsedFolders = JSON.parse(savedFolders);
-      setFolders(parsedFolders);
-      console.log('Switchboard Folders loaded:', parsedFolders);
+      setFolders(JSON.parse(savedFolders));
     }
 
     const savedMissions = localStorage.getItem('MISSOES_ATIVAS');
@@ -78,7 +76,6 @@ const ObjetivosDeCampo = () => {
   };
 
   const deleteFolder = (id: string) => {
-    // If a folder is deleted, its missions become root level (folderId = undefined)
     setMissions(prev => prev.map(m => m.folderId === id ? { ...m, folderId: undefined } : m));
     setFolders(prev => prev.filter(f => f.id !== id));
     if (selectedFolderId === id) setSelectedFolderId('');
@@ -200,19 +197,9 @@ const ObjetivosDeCampo = () => {
     <div className="luxury-panel p-6 w-full mx-auto h-full min-h-[400px]">
       {/* Header & Controls */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xs tracking-[0.2em] text-ivory uppercase">
-            Switchboard {showArchive ? '// ARQUIVO' : 'Operativo'}
-          </h2>
-          {!showArchive && (
-            <button
-              onClick={() => setShowNewFolderInput(!showNewFolderInput)}
-              className="text-[9px] text-zinc-500 hover:text-gold uppercase tracking-widest flex items-center gap-1 transition-colors border border-zinc-800 px-2 py-1 rounded-sm hover:border-gold/50"
-            >
-              <FolderPlus className="w-3 h-3" /> NOVA PASTA
-            </button>
-          )}
-        </div>
+        <h2 className="text-xs tracking-[0.2em] text-ivory uppercase">
+          Switchboard {showArchive ? '// ARQUIVO' : 'Operativo'}
+        </h2>
 
         <button
           onClick={() => setShowArchive(!showArchive)}
@@ -247,10 +234,11 @@ const ObjetivosDeCampo = () => {
             </div>
           )}
 
-          {/* Create New Mission */}
+          {/* Create New Mission & Folder Container */}
           <div className="mb-6 bg-transparent border-t border-b border-zinc-800 py-4 space-y-3">
             <div className="flex flex-col md:flex-row md:items-center gap-3">
-              <div className="flex-1 relative">
+
+              <div className="flex-1 relative flex items-center gap-2">
                 <input
                   type="text"
                   value={newTitle}
@@ -258,6 +246,12 @@ const ObjetivosDeCampo = () => {
                   placeholder="NOVA MISSÃO"
                   className="bg-transparent text-sm text-ivory placeholder-zinc-700 w-full outline-none font-sans tracking-widest uppercase border-b border-zinc-800 focus:border-gold transition-colors pb-1"
                 />
+                <button
+                  onClick={() => setShowNewFolderInput(!showNewFolderInput)}
+                  className="text-[9px] text-zinc-500 hover:text-gold uppercase tracking-widest flex items-center gap-1 transition-colors border border-zinc-800 px-2 py-1 rounded-sm hover:border-gold/50 flex-shrink-0"
+                >
+                  <FolderPlus className="w-3 h-3" /> + NOVA PASTA
+                </button>
               </div>
 
               <div className="flex items-center gap-2">
@@ -308,19 +302,20 @@ const ObjetivosDeCampo = () => {
               <p className="text-center text-[10px] text-zinc-600 py-4 font-mono">NENHUMA MISSÃO OU PASTA ATIVA</p>
             )}
 
-            {/* Folders */}
+            {/* Folders Iteration */}
             {folders.map(folder => {
               const folderMissions = missions.filter(m => m.folderId === folder.id);
+
               return (
-                <div key={folder.id} className="border border-zinc-800/60 rounded-sm bg-black/20">
+                <div key={folder.id} className="folder-component border border-zinc-800/60 rounded-sm bg-black/20">
                   <div
-                    className="flex items-center justify-between p-3 cursor-pointer bg-zinc-900/40 hover:bg-zinc-800/40 transition-colors"
+                    className="folder-header flex items-center justify-between p-3 cursor-pointer bg-zinc-900/40 hover:bg-zinc-800/40 transition-colors"
                     onClick={() => toggleFolder(folder.id)}
                   >
                     <div className="flex items-center gap-2">
                       {folder.isExpanded ? <FolderOpen className="w-4 h-4 text-gold/80" /> : <FolderIcon className="w-4 h-4 text-gold/80" />}
-                      <h3 className="text-xs font-sans tracking-widest text-ivory uppercase">{folder.name}</h3>
-                      <span className="text-[9px] text-zinc-600 font-mono ml-2">[{folderMissions.length}]</span>
+                      <h3 className="folder-title text-xs font-sans tracking-widest text-ivory uppercase">{folder.name}</h3>
+                      <span className="folder-count text-[9px] text-zinc-600 font-mono ml-2">[{folderMissions.length}]</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -337,11 +332,11 @@ const ObjetivosDeCampo = () => {
                   </div>
 
                   {folder.isExpanded && (
-                    <div className="p-3 pt-1 space-y-2 border-t border-zinc-800/40">
+                    <div className="folder-content p-3 pt-1 space-y-2 border-t border-zinc-800/40">
                       {folderMissions.length === 0 ? (
                         <p className="text-[10px] text-zinc-600 font-mono pl-6 py-2">PASTA VAZIA</p>
                       ) : (
-                        <div className="pl-2 border-l border-zinc-800/50 space-y-2 ml-2">
+                        <div className="folder-missions-list pl-2 border-l border-zinc-800/50 space-y-2 ml-2">
                           {folderMissions.map(m => renderMission(m))}
                         </div>
                       )}
@@ -351,9 +346,9 @@ const ObjetivosDeCampo = () => {
               );
             })}
 
-            {/* Root / Unassigned Missions */}
+            {/* Root / Unassigned Missions Iteration */}
             {missions.filter(m => !m.folderId).length > 0 && (
-              <div className="space-y-2 pt-2">
+              <div className="root-missions-container space-y-2 pt-2">
                 {folders.length > 0 && <h3 className="text-[10px] text-zinc-600 tracking-widest uppercase mb-3 ml-1">TAREFAS SOLTAS</h3>}
                 {missions.filter(m => !m.folderId).map(m => renderMission(m))}
               </div>
