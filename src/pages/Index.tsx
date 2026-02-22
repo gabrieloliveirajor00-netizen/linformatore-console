@@ -20,6 +20,8 @@ const Index = () => {
 
     // Refresh every 30 minutes
     const interval = setInterval(initWeather, 30 * 60 * 1000);
+
+    console.log("Switchboard (ObjetivosDeCampo) v2.0 loaded in Index.tsx");
     return () => clearInterval(interval);
   }, []);
 
