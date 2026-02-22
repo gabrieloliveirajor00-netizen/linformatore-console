@@ -13,6 +13,7 @@ const ObjetivosDeCampo = () => {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [archived, setArchived] = useState<Mission[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   // New Folder Inputs
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
@@ -210,14 +211,43 @@ const ObjetivosDeCampo = () => {
   return (
     <div className="luxury-panel p-6 w-full mx-auto h-full min-h-[400px]">
       {/* Header & Controls */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xs tracking-[0.2em] text-ivory uppercase">
-          Switchboard {showArchive ? '// ARQUIVO' : 'Operativo'}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <h2 className="text-xs tracking-[0.2em] text-ivory uppercase whitespace-nowrap">
+          Switchboard {showArchive ? '// ARQUIVO' : ''}
         </h2>
+
+        {/* Folder Pills (Tabs) */}
+        {!showArchive && (
+          <div className="flex flex-wrap items-center gap-2 flex-1 justify-center md:justify-end md:pr-4">
+            <button
+              onClick={() => setActiveFolderId(null)}
+              className={`text-[9px] px-3 py-1 rounded-full border transition-all uppercase tracking-widest ${activeFolderId === null ? 'border-gold text-gold bg-gold/10' : 'border-zinc-800 text-zinc-500 hover:border-zinc-600'}`}
+            >
+              TUDO
+            </button>
+            {folders.map(f => (
+              <button
+                key={f.id}
+                onClick={() => setActiveFolderId(f.id)}
+                className={`text-[9px] px-3 py-1 rounded-full border transition-all uppercase tracking-widest ${activeFolderId === f.id ? 'border-gold text-gold bg-gold/10' : 'border-zinc-800 text-zinc-500 hover:border-zinc-600'}`}
+              >
+                {f.name}
+              </button>
+            ))}
+            {/* New Folder Pill */}
+            <button
+              onClick={() => setShowNewFolderInput(!showNewFolderInput)}
+              className="text-[10px] w-6 h-6 flex items-center justify-center rounded-full border border-zinc-800 text-zinc-500 hover:border-gold hover:text-gold transition-colors"
+              title="Nova Pasta"
+            >
+              +
+            </button>
+          </div>
+        )}
 
         <button
           onClick={() => setShowArchive(!showArchive)}
-          className="text-[9px] text-zinc-500 hover:text-gold uppercase tracking-widest flex items-center gap-1 transition-colors"
+          className="text-[9px] text-zinc-500 hover:text-gold uppercase tracking-widest flex items-center gap-1 transition-colors whitespace-nowrap"
         >
           {showArchive ? 'VOLTAR' : 'HISTÓRICO'} <Archive className="w-3 h-3" />
         </button>
@@ -260,12 +290,6 @@ const ObjetivosDeCampo = () => {
                   placeholder="NOVA MISSÃO"
                   className="bg-transparent text-sm text-ivory placeholder-zinc-700 w-full outline-none font-sans tracking-widest border-b border-zinc-800 focus:border-gold transition-colors pb-1"
                 />
-                <button
-                  onClick={() => setShowNewFolderInput(!showNewFolderInput)}
-                  className="text-[9px] text-zinc-500 hover:text-gold uppercase tracking-widest flex items-center gap-1 transition-colors border border-zinc-800 px-2 py-1 rounded-sm hover:border-gold/50 flex-shrink-0"
-                >
-                  <FolderPlus className="w-3 h-3" /> + NOVA PASTA
-                </button>
               </div>
 
               <div className="flex items-center gap-2">
@@ -317,7 +341,7 @@ const ObjetivosDeCampo = () => {
             )}
 
             {/* Folders Iteration */}
-            {folders.map(folder => {
+            {folders.filter(f => activeFolderId === null || f.id === activeFolderId).map(folder => {
               const folderMissions = missions.filter(m => m.folderId === folder.id);
 
               return (
@@ -333,7 +357,7 @@ const ObjetivosDeCampo = () => {
             })}
 
             {/* Root / Unassigned Missions Iteration */}
-            {missions.filter(m => !m.folderId).length > 0 && (
+            {activeFolderId === null && missions.filter(m => !m.folderId).length > 0 && (
               <div className="root-missions-container space-y-2 pt-2">
                 {folders.length > 0 && <h3 className="text-[10px] text-zinc-600 tracking-widest uppercase mb-3 ml-1">TAREFAS SOLTAS</h3>}
                 {missions.filter(m => !m.folderId).map(m => renderMission(m))}
