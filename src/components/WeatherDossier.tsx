@@ -18,7 +18,7 @@ const WeatherDossier = ({ data, briefing }: WeatherDossierProps) => {
     }
   };
 
-  const DataRow = ({ label, value, icon: Icon }: { label: string, value: string, icon: any }) => (
+  const DataRow = ({ label, value, icon: Icon }: { label: string, value: string, icon: React.ElementType }) => (
     <div className="flex items-center justify-between py-2 border-b border-zinc-900 last:border-0 group hover:bg-white/[0.02] transition-colors px-1">
       <div className="flex items-center gap-2">
         <Icon className="w-3 h-3 text-zinc-600 group-hover:text-gold transition-colors" />

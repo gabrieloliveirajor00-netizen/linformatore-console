@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Mission, getDefaultMissions } from '@/data/weather';
 import { Plus, Archive, RotateCcw, ChevronDown, ChevronUp, FolderPlus, Folder as FolderIcon, FolderOpen } from 'lucide-react';
+import Pasta from './Pasta';
 
 interface Folder {
   id: string;
@@ -307,42 +308,14 @@ const ObjetivosDeCampo = () => {
               const folderMissions = missions.filter(m => m.folderId === folder.id);
 
               return (
-                <div key={folder.id} className="folder-component border border-zinc-800/60 rounded-sm bg-black/20">
-                  <div
-                    className="folder-header flex items-center justify-between p-3 cursor-pointer bg-zinc-900/40 hover:bg-zinc-800/40 transition-colors"
-                    onClick={() => toggleFolder(folder.id)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {folder.isExpanded ? <FolderOpen className="w-4 h-4 text-gold/80" /> : <FolderIcon className="w-4 h-4 text-gold/80" />}
-                      <h3 className="folder-title text-xs font-sans tracking-widest text-ivory uppercase">{folder.name}</h3>
-                      <span className="folder-count text-[9px] text-zinc-600 font-mono ml-2">[{folderMissions.length}]</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }}
-                        className="text-[9px] text-zinc-600 hover:text-red-500 transition-colors uppercase"
-                        title="Remover Pasta (Mantém as missões)"
-                      >
-                        [X]
-                      </button>
-                      <div className="text-zinc-500">
-                        {folder.isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                      </div>
-                    </div>
-                  </div>
-
-                  {folder.isExpanded && (
-                    <div className="folder-content p-3 pt-1 space-y-2 border-t border-zinc-800/40">
-                      {folderMissions.length === 0 ? (
-                        <p className="text-[10px] text-zinc-600 font-mono pl-6 py-2">PASTA VAZIA</p>
-                      ) : (
-                        <div className="folder-missions-list pl-2 border-l border-zinc-800/50 space-y-2 ml-2">
-                          {folderMissions.map(m => renderMission(m))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <Pasta
+                  key={folder.id}
+                  folder={folder}
+                  missions={folderMissions}
+                  onToggle={toggleFolder}
+                  onDelete={deleteFolder}
+                  renderMission={renderMission}
+                />
               );
             })}
 
