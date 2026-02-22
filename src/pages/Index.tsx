@@ -39,7 +39,10 @@ const Index = () => {
             </h1>
             <div className="w-24 h-[1px] bg-gold mx-auto" />
             <p className="font-sans text-xs text-gold uppercase tracking-[0.4em] mt-4">
-              Dossier Confidencial
+              {new Intl.DateTimeFormat('pt-PT', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }).format(new Date())}
+            </p>
+            <p className="font-mono text-[9px] text-zinc-500 tracking-[0.3em] mt-2 uppercase">
+              LAT 41.1579° N // LNG 8.6291° W
             </p>
           </div>
         </header>
