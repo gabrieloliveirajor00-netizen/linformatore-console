@@ -119,6 +119,12 @@ const ObjetivosDeCampo = () => {
     setExpandedId(prev => prev === id ? null : id);
   };
 
+  const cyclePriority = (id: string, currentPriority: number) => {
+    // Cycles: 1 (Low) -> 2 (Mid) -> 3 (High) -> 1 (Low)
+    const nextPriority = currentPriority === 3 ? 1 : (currentPriority + 1) as 1 | 2 | 3;
+    setMissions(prev => prev.map(m => m.id === id ? { ...m, priority: nextPriority } : m));
+  };
+
   const getPriorityColor = (p: number) => {
     switch (p) {
       case 3: return 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]'; // High
@@ -157,7 +163,14 @@ const ObjetivosDeCampo = () => {
             onClick={() => toggleExpand(mission.id)}
           >
             {/* Priority LED */}
-            <div className={`w-1.5 h-1.5 rounded-full ${getPriorityColor(mission.priority)}`} />
+            <div
+              className={`w-2 h-2 rounded-full cursor-pointer hover:scale-125 transition-transform ${getPriorityColor(mission.priority)}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                cyclePriority(mission.id, mission.priority);
+              }}
+              title="Alterar Prioridade"
+            />
 
             <p className="font-sans text-xs text-ivory tracking-wide leading-5 hover:text-gold transition-colors">
               {mission.title}
@@ -245,7 +258,7 @@ const ObjetivosDeCampo = () => {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="NOVA MISSÃO"
-                  className="bg-transparent text-sm text-ivory placeholder-zinc-700 w-full outline-none font-sans tracking-widest uppercase border-b border-zinc-800 focus:border-gold transition-colors pb-1"
+                  className="bg-transparent text-sm text-ivory placeholder-zinc-700 w-full outline-none font-sans tracking-widest border-b border-zinc-800 focus:border-gold transition-colors pb-1"
                 />
                 <button
                   onClick={() => setShowNewFolderInput(!showNewFolderInput)}
